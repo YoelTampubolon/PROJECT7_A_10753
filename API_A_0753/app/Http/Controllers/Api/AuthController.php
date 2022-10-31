@@ -17,7 +17,7 @@ class AuthController extends Controller
         $validate = Validator::make($registrationData, [
             'name' => 'required|max:60',
             'email' => 'required|email:rfc,dns|unique:users',
-            'password' => 'required'
+            'password' => 'required|min:8|/d|[A-Z]'
         ]);
 
         if($validate->fails())
@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         $validate = Validator::make($loginData, [
             'email' => 'required|email:rfc,dns',
-            'password' => 'required'
+            'password' => 'required|min:8|/d|[A-Z]'
         ]);
 
         if($validate->fails())
@@ -56,5 +56,16 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'access_token' => $token
         ]);
+        
     } 
+    
+    public function logout(Request $request){
+        $user = Auth::user()->token();
+        $dataUser = Auth::user();
+        $user->revoke();
+        return response([
+            'message' => 'Logout Succes',
+            'user' => $dataUser
+        ]);
+    }
 }
